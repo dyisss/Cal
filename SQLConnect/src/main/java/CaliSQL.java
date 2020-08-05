@@ -1,25 +1,20 @@
 import org.apache.log4j.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class CaliSQL {
 
-    static Connection caliConn = null;
-    static PreparedStatement caliPrepareStat = null;
-    static Logger logger = Logger.getLogger(CaliSQL.class);
+    private static Connection caliConn = null;
+    private static PreparedStatement caliPrepareStat = null;
+    private static Logger logger = Logger.getLogger(CaliSQL.class);
 
-    public static void main(String[] args) {
+    public static void connect() {
 
-        logger.info("-------- Simple Crunchify Tutorial on how to make JDBC connection to MySQL DB locally on macOS ------------");
+        logger.info("-------- Simple  JDBC connection to MySQL DB locally ------------");
         makeJDBCConnection();
 
-        logger.info("\n---------- Adding company 'Crunchify LLC' to DB ----------");
-        addDataToDB("Crunchify, LLC.", "NYC, US", 5, "https://crunchify.com");
-        addDataToDB("Google Inc.", "Mountain View, CA, US", 50000, "https://google.com");
-        addDataToDB("Apple Inc.", "Cupertino, CA, US", 30000, "http://apple.com");
-
         logger.info("\n---------- Let's get Data from DB ----------");
-        getDataFromDB();
     }
 
     private static void makeJDBCConnection() {
@@ -33,7 +28,7 @@ public class CaliSQL {
 
         try {
             // DriverManager: The basic service for managing a set of JDBC drivers.
-            caliConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/crunchify", "root", "root");
+            caliConn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "dyis", "Egnamatic1");
             if (caliConn != null) {
                 logger.info("Connection Successful! Enjoy. Now it's time to push data");
             } else {
@@ -45,32 +40,80 @@ public class CaliSQL {
         }
     }
 
-    private static void addDataToDB(String companyName, String address, int totalEmployee, String webSite) {
+    public static void addDataToDBStadium(int numSeats, String name) {
 
         try {
             String insertQueryStatement = "INSERT  INTO  Employee  VALUES  (?,?,?,?)";
 
             caliPrepareStat = caliConn.prepareStatement(insertQueryStatement);
-            caliPrepareStat.setString(1, companyName);
-            caliPrepareStat.setString(2, address);
-            caliPrepareStat.setInt(3, totalEmployee);
-            caliPrepareStat.setString(4, webSite);
+            caliPrepareStat.setInt(1, numSeats);
+            caliPrepareStat.setString(2, name);
 
             // execute insert SQL statement
             caliPrepareStat.executeUpdate();
-            log(companyName + " added successfully");
-        } catch (
-
-                SQLException e) {
+            log(name + " added successfully");
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private static void getDataFromDB() {
+    public static void addDataToUser(String name, int matchID, int ticketID) {
+
+        try {
+            String insertQueryStatement = "INSERT  INTO  Employee  VALUES  (?,?,?,?)";
+
+            caliPrepareStat = caliConn.prepareStatement(insertQueryStatement);
+            caliPrepareStat.setString(1, name);
+            caliPrepareStat.setInt(2, ticketID);
+
+            // execute insert SQL statement
+            caliPrepareStat.executeUpdate();
+            log(name + " added successfully");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addDataToDBMatch( Date eventDate, String eventType) {
+
+        try {
+            String insertQueryStatement = "INSERT  INTO  Employee  VALUES  (?,?,?,?)";
+
+            caliPrepareStat = caliConn.prepareStatement(insertQueryStatement);
+            caliPrepareStat.setDate(1, eventDate);
+            caliPrepareStat.setString(2, eventType);
+
+            // execute insert SQL statement
+            caliPrepareStat.executeUpdate();
+            log( "match added successfully");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addDataToDBTicket(String seatType, int seatNumber, int matchID) {
+
+        try {
+            String insertQueryStatement = "INSERT  INTO  Employee  VALUES  (?,?,?,?)";
+
+            caliPrepareStat = caliConn.prepareStatement(insertQueryStatement);
+            caliPrepareStat.setString(1, seatType);
+            caliPrepareStat.setInt(2,seatNumber);
+            caliPrepareStat.setInt(3,matchID);
+
+            // execute insert SQL statement
+            caliPrepareStat.executeUpdate();
+            log( "ticket added successfully");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getDataFromDB(String tableName, ArrayList returnedList) {
 
         try {
             // MySQL Select Query Tutorial
-            String getQueryStatement = "SELECT * FROM employee";
+            String getQueryStatement = "SELECT * FROM "+ tableName;
 
             caliPrepareStat = caliConn.prepareStatement(getQueryStatement);
 
@@ -78,19 +121,38 @@ public class CaliSQL {
             ResultSet rs = caliPrepareStat.executeQuery();
 
             // Let's iterate through the java ResultSet
-            while (rs.next()) {
-                String name = rs.getString("Name");
-                String address = rs.getString("Address");
-                int employeeCount = rs.getInt("EmployeeCount");
-                String website = rs.getString("Website");
-
-                // Simply Print the results
-                System.out.format("%s, %s, %s, %s\n", name, address, employeeCount, website);
+            if ("user".equals(tableName)) {
+                while (rs.next()) {
+                    // TODO add user object here
+                    // Example here String name = rs.getString("Name");
+                    //				String address = rs.getString("Address");
+                    //				int employeeCount = rs.getInt("EmployeeCount");
+                    //				String website = rs.getString("Website");
+                    // Simply Print the results
+                    System.out.println("%s, %s, %s, %s\n");
+                }
+            } else if ("stadium".equals(tableName)) {
+                while (rs.next()) {
+                    // TODO add stadium object here
+                    // Simply Print the results
+                    System.out.println("%s, %s, %s, %s\n");
+                }
+            } else if ("ticket".equals(tableName)) {
+                while (rs.next()) {
+                    // TODO add ticket object here
+                    // Simply Print the results
+                    System.out.println("%s, %s, %s, %s\n");
+                }
+            } else if ("match".equals(tableName)) {
+                while (rs.next()) {
+                    // TODO add match object here
+                    // Simply Print the results
+                    System.out.println("%s, %s, %s, %s\n");
+                }
+            } else {
+                throw new IllegalStateException("Unexpected value: " + tableName);
             }
-
-        } catch (
-
-                SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
