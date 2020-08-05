@@ -1,16 +1,22 @@
-public class Calculator {
+class Calculator {
 
-    public Calculator(){}
+    Calculator(){}
 
-    public double Addition(double num1,double num2){
-        return num1+num2;
+    double Addition(double num1, double num2){
+        return Math.round(num1+num2);
     }
 
     double multiply(double [] numbers){
-        int total = 0;
-        for (int i = 0 ; i<numbers.length;i++){
-            total += numbers[i] * numbers[i+1];
+        double total = 1;
+        double prev = 0;
+        for (double i : numbers){
+            if(prev == 0){
+                prev = i;
+            }else{
+                total = (total*prev) * i;
+                prev = 0;
+            }
         }
-        return total;
+        return Math.round(total);
     }
 }
